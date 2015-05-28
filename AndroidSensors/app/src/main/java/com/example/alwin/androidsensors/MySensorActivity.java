@@ -33,10 +33,12 @@ public class MySensorActivity extends ActionBarActivity implements SensorEventLi
         tv= (TextView)findViewById(R.id.txt2);
         // Get an instance of the sensor service
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        mSensor=mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+
+        //Vervang hieronder TYPE_GYROSCOPE door TYPE_LIGHT om gebruik te maken van de light of Gyroscope sensor
+        mSensor=mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
 
         PackageManager PM= this.getPackageManager();
-        boolean gyro = PM.hasSystemFeature(PackageManager.FEATURE_SENSOR_LIGHT);
+        boolean gyro = PM.hasSystemFeature(PackageManager.FEATURE_SENSOR_GYROSCOPE);
         boolean light = PM.hasSystemFeature(PackageManager.FEATURE_SENSOR_LIGHT);
 
         if(gyro){
