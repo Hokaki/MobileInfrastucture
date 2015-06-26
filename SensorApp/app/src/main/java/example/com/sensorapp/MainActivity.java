@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,19 +50,23 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
     private static int DISPLACEMENT = 10; // 10 meters
 
     // UI elements
-    private TextView lblLocation;
-    private TextView adress;
-    private Button btnShowLocation, btnStartLocationUpdates;
+    private TextView LocationTxt, adressTxt, coordinatesTxt, bestemmingTxt;
+    private EditText destination;
+    private Button btnShowLocation, btnStartLocationUpdates, btnSubmit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        lblLocation = (TextView) findViewById(R.id.lblLocation);
-        adress = (TextView) findViewById(R.id.adress);
+        LocationTxt = (TextView) findViewById(R.id.lblLocation);
+        adressTxt = (TextView) findViewById(R.id.adress);
+        coordinatesTxt = (TextView) findViewById(R.id.coordinaten);
+        bestemmingTxt = (TextView) findViewById(R.id.bestemming);
         btnShowLocation = (Button) findViewById(R.id.btnShowLocation);
         btnStartLocationUpdates = (Button) findViewById(R.id.btnLocationUpdates);
+        btnSubmit = (Button) findViewById(R.id.submit);
+        destination = (EditText) findViewById(R.id.destination);
 
         // First we need to check availability of play services
         if (checkPlayServices()) {
@@ -70,6 +76,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
             createLocationRequest();
         }
+
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getLatLong();
+            }
+        });
 
         // Show location button click listener
         btnShowLocation.setOnClickListener(new View.OnClickListener() {
@@ -126,6 +139,59 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
         stopLocationUpdates();
     }
 
+    public Double[] getLatLong() {
+
+        Double[] array = new Double[2];
+
+        String dest = destination.getText().toString();
+
+        Geocoder coder = new Geocoder(this);
+        try {
+            ArrayList<Address> adresses = (ArrayList<Address>) coder.getFromLocationName(dest, 1);
+            for (Address add : adresses) {
+                if (true) { //Controls to ensure it is right address such as country etc.
+                    double longitude = add.getLongitude();
+                    double latitude = add.getLatitude();
+                    array[0] = longitude;
+                    array[1] = latitude;
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        float dis = calculateDistance(array);
+
+        bestemmingTxt
+                .setText(dest + ", " + Math.round(dis) + " KM");
+
+        coordinatesTxt
+        .setText(array[0].toString() + ", " + array[1].toString());
+
+        return array;
+
+    }
+
+    public float calculateDistance(Double[] array){
+
+        Location locationA = new Location("point A");
+
+        locationA.setLatitude(mLastLocation.getLatitude());
+        locationA.setLongitude(mLastLocation.getLongitude());
+
+        Location locationB = new Location("point B");
+
+        locationB.setLatitude(array[1].doubleValue());
+        locationB.setLongitude(array[0].doubleValue());
+
+        //float distance = locationA.distanceBetween(mLastLocation.getLatitude(), mLastLocation.getLongitude(),array[0],array[1], 1);
+        float distance = locationA.distanceTo(locationB)/1000;
+
+        Log.i("DISTANCEEEEEEEE",String.valueOf(distance));
+
+        return distance;
+    }
+
     public void getMyLocationAddress() {
 
         Geocoder geocoder= new Geocoder(this, Locale.ENGLISH);
@@ -141,15 +207,15 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
                 StringBuilder strAddress = new StringBuilder();
 
                 for(int i=0; i<fetchedAddress.getMaxAddressLineIndex(); i++) {
-                    strAddress.append(fetchedAddress.getAddressLine(i)).append("\n");
+                    strAddress.append(fetchedAddress.getAddressLine(i)).append(",");
                 }
 
-                adress.setText("I am at: " +strAddress.toString());
+                adressTxt.setText(strAddress.toString());
 
             }
 
             else
-                adress.setText("No location found..!");
+                adressTxt.setText("No location found..!");
 
         }
         catch (IOException e) {
@@ -171,11 +237,11 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
             double latitude = mLastLocation.getLatitude();
             double longitude = mLastLocation.getLongitude();
 
-            lblLocation.setText(latitude + ", " + longitude);
+            LocationTxt.setText(latitude + ", " + longitude);
 
         } else {
 
-            lblLocation
+            LocationTxt
                     .setText("(Couldn't get the location. Make sure location is enabled on the device)");
         }
     }
@@ -284,6 +350,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
         // Once connected with google api, get the location
         displayLocation();
+        getMyLocationAddress();
 
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
@@ -305,6 +372,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
 
         // Displaying the new location on UI
         displayLocation();
+        getMyLocationAddress();
     }
 
 }
