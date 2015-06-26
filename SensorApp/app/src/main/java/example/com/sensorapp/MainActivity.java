@@ -12,6 +12,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -27,7 +35,16 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends Activity implements ConnectionCallbacks,
-        OnConnectionFailedListener, LocationListener {
+        OnConnectionFailedListener, LocationListener , SensorEventListener{
+
+    //assembly compass picture
+    private ImageView image;
+
+    //compass picture angle turned
+    private float currentDegree = 0f;
+
+    //device sensor manager
+    private SensorManager mSensorManager;
 
     // LogCat tag
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -54,6 +71,8 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
     private EditText destination;
     private Button btnShowLocation, btnStartLocationUpdates, btnSubmit;
 
+    private TextView tvHeading;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +86,13 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
         btnStartLocationUpdates = (Button) findViewById(R.id.btnLocationUpdates);
         btnSubmit = (Button) findViewById(R.id.submit);
         destination = (EditText) findViewById(R.id.destination);
+
+        image = (ImageView) findViewById(R.id.imageViewCompass);
+
+        //TextView that will tell the use what degree is heading.
+        tvHeading = (TextView) findViewById(R.id.tvHeading);
+        //sensor capabilities
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
 
         // First we need to check availability of play services
         if (checkPlayServices()) {
@@ -117,6 +143,9 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
     protected void onResume() {
         super.onResume();
 
+        //for the system's orientation sensor registered listeners
+        mSensorManager.registerListener(this, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
+
         checkPlayServices();
 
         // Resuming the periodic location updates
@@ -136,6 +165,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
     @Override
     protected void onPause() {
         super.onPause();
+        mSensorManager.unregisterListener(this);
         stopLocationUpdates();
     }
 
@@ -375,4 +405,34 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
         getMyLocationAddress();
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        //get the angle around the z-axis rotated
+        float degree = Math.round(event.values[0]);
+
+        tvHeading.setText("Heading: " + Float.toString(degree)+ " degrees");
+
+        //create a rotation animation (reverse turn degree degrees)
+        RotateAnimation ra = new RotateAnimation(
+                currentDegree,
+                -degree,
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f);
+
+        //how long the animation will take place
+        ra.setDuration(210);
+
+        //set the animation after the end of the reservation status
+        ra.setFillAfter(true);
+
+        //start the animation
+        image.startAnimation(ra);
+        currentDegree = -degree;
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
 }

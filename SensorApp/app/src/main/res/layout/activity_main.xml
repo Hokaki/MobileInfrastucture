@@ -2,9 +2,10 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/view_bg"
+    android:background="#CC3333"
     android:orientation="vertical"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    android:weightSum="1">
 
     <!--<ImageView-->
         <!--android:layout_width="60dp"-->
@@ -129,10 +130,33 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1.04"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="71dp"
+            android:layout_height="wrap_content"
+            android:text="Heading: 0.0"
+            android:id="@+id/tvHeading"
+            android:layout_gravity="center_horizontal" />
+
+        <ImageView
+            android:layout_width="147dp"
+            android:layout_height="154dp"
+            android:id="@+id/imageViewCompass"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/compass"/>
+    </LinearLayout>
+
     <RelativeLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="match_parent"
+        android:layout_height="49dp"
         android:gravity="bottom">
 
         <Button
