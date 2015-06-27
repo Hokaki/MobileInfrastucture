@@ -1,6 +1,7 @@
 package example.com.sensorapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -69,7 +70,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
     // UI elements
     private TextView LocationTxt, adressTxt, coordinatesTxt, bestemmingTxt;
     private EditText destination;
-    private Button btnShowLocation, btnStartLocationUpdates, btnSubmit;
+    private Button btnShowLocation, btnStartLocationUpdates, btnSubmit, btnLocationListView;
 
     private TextView tvHeading;
 
@@ -85,6 +86,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
         btnShowLocation = (Button) findViewById(R.id.btnShowLocation);
         btnStartLocationUpdates = (Button) findViewById(R.id.btnLocationUpdates);
         btnSubmit = (Button) findViewById(R.id.submit);
+        btnLocationListView = (Button) findViewById(R.id.btnLocationListView);
         destination = (EditText) findViewById(R.id.destination);
 
         image = (ImageView) findViewById(R.id.imageViewCompass);
@@ -93,6 +95,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
         tvHeading = (TextView) findViewById(R.id.tvHeading);
         //sensor capabilities
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+
 
         // First we need to check availability of play services
         if (checkPlayServices()) {
@@ -126,6 +129,14 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
             @Override
             public void onClick(View v) {
                 togglePeriodicLocationUpdates();
+            }
+        });
+
+        btnLocationListView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LocationListActivity.class);
+                startActivity(intent);
             }
         });
 
