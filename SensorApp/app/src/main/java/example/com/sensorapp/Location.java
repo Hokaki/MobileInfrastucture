@@ -22,6 +22,8 @@ public class Location {
         this.time = time;
     }
 
+    public Location(){}
+
     public double getId() {
         return id;
     }
