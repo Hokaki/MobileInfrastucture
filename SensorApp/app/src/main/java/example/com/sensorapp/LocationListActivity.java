@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class LocationListActivity extends Activity {
 
-    private ArrayList<Location> arrayLocation;
+    private ArrayList<Location> items;
     private Location item;
     private Button btnButton;
     private ListView locationListView;
@@ -41,9 +41,10 @@ public class LocationListActivity extends Activity {
         setContentView(R.layout.activity_location_list);
 
         btnButton = (Button) findViewById(R.id.btnBack);
+        items = new ArrayList<>();
         locationListView = (ListView) findViewById(R.id.locationListView);
-        locationAdapter = new LocationAdapter(arrayLocation, this);
-        //locationListView.setAdapter(locationAdapter);
+        locationAdapter = new LocationAdapter(items, this);
+        locationListView.setAdapter(locationAdapter);
 
         getLocations();
 
@@ -60,7 +61,7 @@ public class LocationListActivity extends Activity {
         RequestQueue queue = Volley.newRequestQueue(this);
 
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
-                "http://192.168.0.102:8080/RestApp/resources/location/all", null, new Response.Listener<JSONObject>() {
+                "http://192.168.0.101:8080/RestApp/resources/location/all", null, new Response.Listener<JSONObject>() {
 
 
             @Override
@@ -71,6 +72,8 @@ public class LocationListActivity extends Activity {
                 if (response != null) {
 
                     parseJsonComment(response);
+                    locationAdapter.setItems(items);
+                    locationAdapter.notifyDataSetChanged();
 
                 }
             }
@@ -97,16 +100,20 @@ public class LocationListActivity extends Activity {
     private void parseJsonComment(JSONObject response) {
 
         try {
-            JSONArray feedArray = response.getJSONArray("");
+            JSONArray feedArray = response.getJSONArray("location");
 
             for (int i = 0; i < feedArray.length(); i++) {
 
                 JSONObject feed = (JSONObject) feedArray.get(i);
 
-                Log.i("VOLLEYJSON",feed.getString("tijd"));
-
                 item = new Location();
-
+                item.setId(feed.getInt("id"));
+                item.setCurrentLocation(feed.getString("huidigeLocation"));
+                item.setCurrentCoordination(feed.getString("huidigeCoordinaten"));
+                item.setDestination(feed.getString("bestemming"));
+                item.setDestinationCoordination(feed.getString("bestemmingCoordinaten"));
+                item.setTime(feed.getString("tijd"));
+                items.add(item);
             }
 
         } catch (JSONException e) {

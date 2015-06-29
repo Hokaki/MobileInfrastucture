@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -38,8 +39,20 @@ public class LocationAdapter extends BaseAdapter{
         return position;
     }
 
+    public class ViewHolder{
+
+        private TextView huidigTxt;
+        private TextView coordinatenTxt;
+        private TextView bestemmingTxt;
+        private TextView bCoordinatenTxt;
+        private TextView tijd;
+
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+
+        final ViewHolder holder;
 
         if (inflater == null)
             inflater = (LayoutInflater) activity
@@ -48,8 +61,32 @@ public class LocationAdapter extends BaseAdapter{
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.location_list_items, parent, false);
 
+            holder = new ViewHolder();
+            holder.huidigTxt = (TextView) convertView.findViewById(R.id.huidigTxt);
+            holder.coordinatenTxt = (TextView) convertView.findViewById(R.id.coordinatenTxt);
+            holder.bestemmingTxt = (TextView) convertView.findViewById(R.id.bestemmingTxt);
+            holder.bCoordinatenTxt = (TextView) convertView.findViewById(R.id.bCoordinatenTxt);
+            holder.tijd = (TextView) convertView.findViewById(R.id.tijd);
+
+            convertView.setTag(holder);
+
+        }else{
+            holder = (ViewHolder) convertView.getTag();
         }
 
+        Location item = locations.get(position);
+
+        holder.huidigTxt.setText(item.getCurrentLocation());
+        holder.coordinatenTxt.setText(item.getCurrentCoordination());
+        holder.bestemmingTxt.setText(item.getDestination());
+        holder.bCoordinatenTxt.setText(item.getCurrentCoordination());
+        holder.tijd.setText(item.getTime());
+
+
         return convertView;
+    }
+
+    public void setItems(List<Location> locations) {
+        this.locations = locations;
     }
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
+import org.json.simple.*;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -26,26 +27,36 @@ public class LocationService {
     @GET
     @Path("/all")
     @Produces("application/json")
-    public Location locations(){
+    public String locations(){
         List<Location> locations = new ArrayList<Location>();
-        Location location = new Location();
+        //List<Location> array = new ArrayList<Location>();
+        
+        JSONObject objectList = new JSONObject();
+        JSONArray array = new JSONArray();
+        JSONObject object = new JSONObject();
+        
         dbManager = new DbManager();
         dbManager.openConnection();
         querymanager = new Querymanager(dbManager);
         
         locations = querymanager.getLocations();
-
+        
         for (Location l:locations) {
-            location.setId(l.getId());
-            location.setHuidigeLocation(l.getHuidigeLocation());
-            location.setHuidigeCoordinaten(l.getHuidigeCoordinaten());
-            location.setBestemming(l.getBestemming());
-            location.setBestemmingCoordinaten(l.getBestemmingCoordinaten());
-            location.setTijd(l.getTijd());
+            object.put("id", l.getId());
+            object.put("huidigeLocation", l.getHuidigeLocation());
+            object.put("huidigeCoordinaten", l.getHuidigeCoordinaten());
+            object.put("bestemming", l.getBestemming());
+            object.put("bestemmingCoordinaten", l.getBestemmingCoordinaten());
+            object.put("tijd", l.getTijd());
+            array.add(object);
 	}
         
+        objectList.put("location", array);
+        
+        String jsonString = objectList.toJSONString();
+        
         dbManager.closeConnection();
-        return location;
+        return jsonString;
     }
     
     
