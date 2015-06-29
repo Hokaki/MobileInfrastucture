@@ -61,7 +61,7 @@ public class LocationListActivity extends Activity {
         RequestQueue queue = Volley.newRequestQueue(this);
 
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
-                "http://192.168.0.101:8080/RestApp/resources/location/all", null, new Response.Listener<JSONObject>() {
+                "http://192.168.192.46:8080/RestApp/resources/location/all", null, new Response.Listener<JSONObject>() {
 
 
             @Override
