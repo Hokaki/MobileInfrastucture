@@ -42,6 +42,7 @@ public class LocationService {
         locations = querymanager.getLocations();
         
         for (Location l:locations) {
+            object = new JSONObject();
             object.put("id", l.getId());
             object.put("huidigeLocation", l.getHuidigeLocation());
             object.put("huidigeCoordinaten", l.getHuidigeCoordinaten());

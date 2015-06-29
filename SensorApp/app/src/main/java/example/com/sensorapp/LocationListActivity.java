@@ -41,7 +41,7 @@ public class LocationListActivity extends Activity {
         setContentView(R.layout.activity_location_list);
 
         btnButton = (Button) findViewById(R.id.btnBack);
-        items = new ArrayList<>();
+        items = new ArrayList<Location>();
         locationListView = (ListView) findViewById(R.id.locationListView);
         locationAdapter = new LocationAdapter(items, this);
         locationListView.setAdapter(locationAdapter);

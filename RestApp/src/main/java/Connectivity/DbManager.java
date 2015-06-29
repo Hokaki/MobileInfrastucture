@@ -21,8 +21,8 @@ public class DbManager {
         try {
             Class.forName("com.mysql.jdbc.Driver");
             
-            String url = "jdbc:mysql://localhost:3306/locationinfo";
-            String user = "root", pass = "root";
+            String url = "jdbc:mysql://localhost:3306/restfull?zeroDateTimeBehavior=convertToNull";
+            String user = "root", pass = "117007";
                     
 
             /** Open connection */

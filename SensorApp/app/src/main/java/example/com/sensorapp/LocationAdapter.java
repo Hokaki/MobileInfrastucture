@@ -76,11 +76,11 @@ public class LocationAdapter extends BaseAdapter{
 
         Location item = locations.get(position);
 
-        holder.huidigTxt.setText(item.getCurrentLocation());
-        holder.coordinatenTxt.setText(item.getCurrentCoordination());
-        holder.bestemmingTxt.setText(item.getDestination());
-        holder.bCoordinatenTxt.setText(item.getCurrentCoordination());
-        holder.tijd.setText(item.getTime());
+        holder.huidigTxt.setText("HuidigeLocatie: " + item.getCurrentLocation());
+        holder.coordinatenTxt.setText("HuidigeCoördinaat: " + item.getCurrentCoordination());
+        holder.bestemmingTxt.setText("Bestemming: " + item.getDestination());
+        holder.bCoordinatenTxt.setText("BestemmingCoördinaat: " + item.getCurrentCoordination());
+        holder.tijd.setText("Tijd: " + item.getTime());
 
 
         return convertView;
