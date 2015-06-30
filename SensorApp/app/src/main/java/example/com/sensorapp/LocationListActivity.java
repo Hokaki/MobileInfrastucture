@@ -1,20 +1,17 @@
 package example.com.sensorapp;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -22,8 +19,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class LocationListActivity extends Activity {
@@ -61,7 +56,7 @@ public class LocationListActivity extends Activity {
         RequestQueue queue = Volley.newRequestQueue(this);
 
                 JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET,
-                "http://192.168.192.46:8080/RestApp/resources/location/all", null, new Response.Listener<JSONObject>() {
+                "http://192.168.0.101:8080/RestApp/resources/location/all", null, new Response.Listener<JSONObject>() {
 
 
             @Override
@@ -112,49 +107,12 @@ public class LocationListActivity extends Activity {
                 item.setCurrentCoordination(feed.getString("huidigeCoordinaten"));
                 item.setDestination(feed.getString("bestemming"));
                 item.setDestinationCoordination(feed.getString("bestemmingCoordinaten"));
-                item.setTime(feed.getString("tijd"));
+                item.setTime(feed.getLong("tijd"));
                 items.add(item);
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    public void postLocation(Context context){
-
-        //requestStarted
-        RequestQueue queue = Volley.newRequestQueue(context);
-        StringRequest sr = new StringRequest(Request.Method.POST, "", new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.i("VOLLYPOST", response);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                //requestEndedWithError
-                Log.i("VOLLYPOST",error.toString());
-            }
-        })
-
-        {
-            @Override
-            protected Map<String,String> getParams(){
-                Map<String,String> params = new HashMap<String, String>();
-                params.put("gebruiker_id", "");
-                params.put("bericht_id","");
-                params.put("comment", "");
-                return params;
-            }
-
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String,String> params = new HashMap<String, String>();
-                params.put("Content-Type","application/x-www-form-urlencoded");
-                return params;
-            }
-        };
-        queue.add(sr);
     }
 }

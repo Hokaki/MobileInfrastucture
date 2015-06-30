@@ -1,6 +1,7 @@
 package example.com.sensorapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -21,6 +22,13 @@ import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -32,8 +40,10 @@ import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends Activity implements ConnectionCallbacks,
         OnConnectionFailedListener, LocationListener , SensorEventListener{
@@ -63,7 +73,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
     private LocationRequest mLocationRequest;
 
     // Location updates intervals in sec
-    private static int UPDATE_INTERVAL = 10000; // 10 sec
+    private static int UPDATE_INTERVAL = 30000; // 30 sec
     private static int FATEST_INTERVAL = 5000; // 5 sec
     private static int DISPLACEMENT = 10; // 10 meters
 
@@ -178,6 +188,50 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
         super.onPause();
         mSensorManager.unregisterListener(this);
         stopLocationUpdates();
+    }
+
+    public void postLocation(Context context){
+
+        double latitude = mLastLocation.getLatitude();
+        double longitude = mLastLocation.getLongitude();
+
+        final String coordinaten = latitude + "," + longitude;
+
+        //requestStarted
+        RequestQueue queue = Volley.newRequestQueue(context);
+        StringRequest sr = new StringRequest(Request.Method.POST, "http://192.168.0.101:8080/RestApp/resources/location/add", new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                Log.i("VOLLEYPOST", response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //requestEndedWithError
+                Log.i("VOLLEYPOST",error.toString());
+            }
+        })
+
+        {
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("huidigelocatie", adressTxt.getText().toString());
+                params.put("coordinaten",LocationTxt.getText().toString());
+                params.put("bestemming", destination.getText().toString());
+                params.put("bCoordinaten", coordinatesTxt.getText().toString());
+                return params;
+            }
+
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+
+                return params;
+            }
+        };
+        queue.add(sr);
     }
 
     public Double[] getLatLong() {
@@ -414,6 +468,7 @@ public class MainActivity extends Activity implements ConnectionCallbacks,
         // Displaying the new location on UI
         displayLocation();
         getMyLocationAddress();
+        postLocation(this);
     }
 
     @Override

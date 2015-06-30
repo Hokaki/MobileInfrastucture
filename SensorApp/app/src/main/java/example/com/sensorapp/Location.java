@@ -10,10 +10,10 @@ public class Location {
     private String currentCoordination;
     private String destination;
     private String destinationCoordination;
-    private String time;
+    private long time;
 
 
-    public Location(double id, String currentLocation, String currentCoordination, String destination, String destinationCoordination, String time) {
+    public Location(double id, String currentLocation, String currentCoordination, String destination, String destinationCoordination, long time) {
         this.id = id;
         this.currentLocation = currentLocation;
         this.currentCoordination = currentCoordination;
@@ -64,11 +64,11 @@ public class Location {
         this.destinationCoordination = destinationCoordination;
     }
 
-    public String getTime() {
+    public long getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
